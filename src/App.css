@@ -1,0 +1,53 @@
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Markdown editor specific styles */
+.w-md-editor {
+  box-shadow: none !important;
+}
+
+.w-md-editor-toolbar {
+  border-bottom: 1px solid #d9d9d9 !important;
+}
+
+/* Table responsive improvements */
+.ant-table-wrapper {
+  overflow-x: auto;
+}
+
+/* Ensure proper layout on mobile */
+@media (max-width: 768px) {
+  .ant-space {
+    width: 100%;
+  }
+  
+  .ant-space > .ant-space-item {
+    width: 100%;
+  }
+}
