@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Modal, Input, Button, Space, Typography, Tag, App, Alert } from 'antd';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,9 +11,19 @@ const SettingsModal = memo(({ open, onClose }) => {
   const dispatch = useDispatch();
   const { message, modal } = App.useApp();
   const currentStatuses = useSelector(state => state.settings.statusOptions);
+  const username = useSelector(state => state.settings.username);
+  const problems = useSelector(state => state.problems.problems);
   
   const [statuses, setStatuses] = useState([...currentStatuses]);
   const [inputValue, setInputValue] = useState('');
+
+  // Reset local state when modal opens
+  useEffect(() => {
+    if (open) {
+      setStatuses([...currentStatuses]);
+      setInputValue('');
+    }
+  }, [open, currentStatuses]);
 
   const handleAddStatus = () => {
     if (!inputValue.trim()) {
@@ -31,7 +41,7 @@ const SettingsModal = memo(({ open, onClose }) => {
   };
 
   const handleRemoveStatus = (statusToRemove) => {
-    setStatuses(statuses.filter(s => s !== statusToRemove));
+    setStatuses(prevStatuses => prevStatuses.filter(s => s !== statusToRemove));
   };
 
   const hasChanges = () => {
@@ -73,16 +83,25 @@ const SettingsModal = memo(({ open, onClose }) => {
       onOk: () => {
         dispatch(setStatusOptions(statuses));
         dispatch(resetAllStatuses());
+        
+        // Save to localStorage
+        try {
+          const state = {
+            problems,
+            settings: {
+              statusOptions: statuses,
+              username,
+            },
+          };
+          localStorage.setItem('cf_todo_state', JSON.stringify(state));
+        } catch (error) {
+          console.error('Failed to save to localStorage:', error);
+        }
+        
         message.success('Status options updated. All problem statuses have been reset.');
         onClose();
       },
     });
-  };
-
-  const handleCancel = () => {
-    setStatuses([...currentStatuses]);
-    setInputValue('');
-    onClose();
   };
 
   return (
@@ -90,7 +109,7 @@ const SettingsModal = memo(({ open, onClose }) => {
       title="Settings - Manage Status Options"
       open={open}
       onOk={handleSave}
-      onCancel={handleCancel}
+      onCancel={onClose}
       width={600}
       okText="Save Changes"
       cancelText="Cancel"
@@ -106,9 +125,9 @@ const SettingsModal = memo(({ open, onClose }) => {
         <div>
           <Text strong>Current Status Options:</Text>
           <div style={{ marginTop: '10px', marginBottom: '15px' }}>
-            {statuses.map((status, index) => (
+            {statuses.map((status) => (
               <Tag
-                key={index}
+                key={status}
                 closable
                 onClose={() => handleRemoveStatus(status)}
                 color="blue"
