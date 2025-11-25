@@ -1,31 +1,30 @@
-import { memo } from 'react';
-import { Alert, Select, Button, Space } from 'antd';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { bulkUpdateStatus } from '../store/problemsSlice';
-import { clearStatusChangeFlag } from '../store/settingsSlice';
+import { memo, useState } from 'react'
+import { Alert, Select, Button, Space } from 'antd'
+import { useDispatch, useSelector } from 'react-redux'
+import { bulkUpdateStatus } from '../store/problemsSlice'
+import { clearStatusChangeFlag } from '../store/settingsSlice'
 
 const BulkUpdateBanner = memo(() => {
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  const dispatch = useDispatch();
-  const statusesChanged = useSelector(state => state.settings.statusesChanged);
-  const statusOptions = useSelector(state => state.settings.statusOptions);
+  const [selectedStatus, setSelectedStatus] = useState(null)
+  const dispatch = useDispatch()
+  const statusesChanged = useSelector(state => state.settings.statusesChanged)
+  const statusOptions = useSelector(state => state.settings.statusOptions)
 
   if (!statusesChanged) {
-    return null;
+    return null
   }
 
   const handleApply = () => {
     if (!selectedStatus) {
-      return;
+      return
     }
-    dispatch(bulkUpdateStatus(selectedStatus));
-    dispatch(clearStatusChangeFlag());
-  };
+    dispatch(bulkUpdateStatus(selectedStatus))
+    dispatch(clearStatusChangeFlag())
+  }
 
   const handleDismiss = () => {
-    dispatch(clearStatusChangeFlag());
-  };
+    dispatch(clearStatusChangeFlag())
+  }
 
   return (
     <div style={{ padding: '20px', paddingBottom: '0' }}>
@@ -34,7 +33,7 @@ const BulkUpdateBanner = memo(() => {
         description={
           <Space orientation="vertical" style={{ width: '100%' }}>
             <div>
-              All problem statuses have been reset due to status option changes. 
+              All problem statuses have been reset due to status option changes.
               Select a new status for all problems or update them individually.
             </div>
             <Space style={{ marginTop: '10px' }}>
@@ -50,12 +49,14 @@ const BulkUpdateBanner = memo(() => {
                   </Select.Option>
                 ))}
               </Select>
-              <Button type="primary" onClick={handleApply} disabled={!selectedStatus}>
+              <Button
+                type="primary"
+                onClick={handleApply}
+                disabled={!selectedStatus}
+              >
                 Apply to All
               </Button>
-              <Button onClick={handleDismiss}>
-                Dismiss
-              </Button>
+              <Button onClick={handleDismiss}>Dismiss</Button>
             </Space>
           </Space>
         }
@@ -64,9 +65,9 @@ const BulkUpdateBanner = memo(() => {
         closable={false}
       />
     </div>
-  );
-});
+  )
+})
 
-BulkUpdateBanner.displayName = 'BulkUpdateBanner';
+BulkUpdateBanner.displayName = 'BulkUpdateBanner'
 
-export default BulkUpdateBanner;
+export default BulkUpdateBanner

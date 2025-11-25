@@ -5,17 +5,14 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import react from 'eslint-plugin-react'
 import prettier from 'eslint-plugin-prettier'
 import eslintConfigPrettier from 'eslint-config-prettier'
-import { defineConfig, globalIgnores } from 'eslint/config'
 
-export default defineConfig([
-  globalIgnores(['dist', 'node_modules', 'build']),
+export default [
+  {
+    ignores: ['dist', 'node_modules', 'build'],
+  },
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -27,6 +24,8 @@ export default defineConfig([
     },
     plugins: {
       react,
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
       prettier,
     },
     settings: {
@@ -43,6 +42,16 @@ export default defineConfig([
       'react/prop-types': 'off',
       'react/jsx-uses-react': 'error',
       'react/jsx-uses-vars': 'error',
+
+      // React Hooks rules
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // React Refresh rules
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
 
       // General JavaScript rules
       'no-unused-vars': [
@@ -70,4 +79,4 @@ export default defineConfig([
     },
   },
   eslintConfigPrettier,
-])
+]

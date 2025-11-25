@@ -1,64 +1,66 @@
-import { useState, useEffect, memo } from 'react';
-import { Modal, Input, Button, Space, Typography, Tag, App, Alert } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { setStatusOptions } from '../store/settingsSlice';
-import { resetAllStatuses } from '../store/problemsSlice';
+import { useState, useEffect, memo } from 'react'
+import { Modal, Input, Button, Space, Typography, Tag, App, Alert } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import { setStatusOptions } from '../store/settingsSlice'
+import { resetAllStatuses } from '../store/problemsSlice'
 
-const { Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography
 
 const SettingsModal = memo(({ open, onClose }) => {
-  const dispatch = useDispatch();
-  const { message, modal } = App.useApp();
-  const currentStatuses = useSelector(state => state.settings.statusOptions);
-  const username = useSelector(state => state.settings.username);
-  const problems = useSelector(state => state.problems.problems);
-  
-  const [statuses, setStatuses] = useState([...currentStatuses]);
-  const [inputValue, setInputValue] = useState('');
+  const dispatch = useDispatch()
+  const { message, modal } = App.useApp()
+  const currentStatuses = useSelector(state => state.settings.statusOptions)
+  const username = useSelector(state => state.settings.username)
+  const problems = useSelector(state => state.problems.problems)
+
+  const [statuses, setStatuses] = useState([...currentStatuses])
+  const [inputValue, setInputValue] = useState('')
 
   // Reset local state when modal opens
   useEffect(() => {
     if (open) {
-      setStatuses([...currentStatuses]);
-      setInputValue('');
+      setStatuses([...currentStatuses])
+      setInputValue('')
     }
-  }, [open, currentStatuses]);
+  }, [open, currentStatuses])
 
   const handleAddStatus = () => {
     if (!inputValue.trim()) {
-      message.warning('Please enter a status name');
-      return;
+      message.warning('Please enter a status name')
+      return
     }
-    
-    if (statuses.includes(inputValue.trim())) {
-      message.warning('This status already exists');
-      return;
-    }
-    
-    setStatuses([...statuses, inputValue.trim()]);
-    setInputValue('');
-  };
 
-  const handleRemoveStatus = (statusToRemove) => {
-    setStatuses(prevStatuses => prevStatuses.filter(s => s !== statusToRemove));
-  };
+    if (statuses.includes(inputValue.trim())) {
+      message.warning('This status already exists')
+      return
+    }
+
+    setStatuses([...statuses, inputValue.trim()])
+    setInputValue('')
+  }
+
+  const handleRemoveStatus = statusToRemove => {
+    setStatuses(prevStatuses => prevStatuses.filter(s => s !== statusToRemove))
+  }
 
   const hasChanges = () => {
-    if (statuses.length !== currentStatuses.length) return true;
-    return statuses.some((status, index) => status !== currentStatuses[index]);
-  };
+    if (statuses.length !== currentStatuses.length) {
+      return true
+    }
+    return statuses.some((status, index) => status !== currentStatuses[index])
+  }
 
   const handleSave = () => {
     if (!hasChanges()) {
-      message.info('No changes detected');
-      onClose();
-      return;
+      message.info('No changes detected')
+      onClose()
+      return
     }
 
     if (statuses.length === 0) {
-      message.error('You must have at least one status option');
-      return;
+      message.error('You must have at least one status option')
+      return
     }
 
     // Show destructive warning
@@ -67,23 +69,26 @@ const SettingsModal = memo(({ open, onClose }) => {
       content: (
         <div>
           <Paragraph>
-            Changing status definitions will <Text strong type="danger">invalidate the status of ALL problems</Text> currently in your table.
+            Changing status definitions will{' '}
+            <Text strong type="danger">
+              invalidate the status of ALL problems
+            </Text>{' '}
+            currently in your table.
           </Paragraph>
           <Paragraph type="secondary">
-            All problem statuses will be reset to null, and you'll need to reassign them using the bulk update tool.
+            All problem statuses will be reset to null, and you'll need to
+            reassign them using the bulk update tool.
           </Paragraph>
-          <Paragraph strong>
-            Are you sure you want to proceed?
-          </Paragraph>
+          <Paragraph strong>Are you sure you want to proceed?</Paragraph>
         </div>
       ),
       okText: 'Yes, Proceed',
       okType: 'danger',
       cancelText: 'Cancel',
       onOk: () => {
-        dispatch(setStatusOptions(statuses));
-        dispatch(resetAllStatuses());
-        
+        dispatch(setStatusOptions(statuses))
+        dispatch(resetAllStatuses())
+
         // Save to localStorage
         try {
           const state = {
@@ -92,17 +97,19 @@ const SettingsModal = memo(({ open, onClose }) => {
               statusOptions: statuses,
               username,
             },
-          };
-          localStorage.setItem('cf_todo_state', JSON.stringify(state));
+          }
+          localStorage.setItem('cf_todo_state', JSON.stringify(state))
         } catch (error) {
-          console.error('Failed to save to localStorage:', error);
+          console.error('Failed to save to localStorage:', error)
         }
-        
-        message.success('Status options updated. All problem statuses have been reset.');
-        onClose();
+
+        message.success(
+          'Status options updated. All problem statuses have been reset.'
+        )
+        onClose()
       },
-    });
-  };
+    })
+  }
 
   return (
     <Modal
@@ -125,13 +132,17 @@ const SettingsModal = memo(({ open, onClose }) => {
         <div>
           <Text strong>Current Status Options:</Text>
           <div style={{ marginTop: '10px', marginBottom: '15px' }}>
-            {statuses.map((status) => (
+            {statuses.map(status => (
               <Tag
                 key={status}
                 closable
                 onClose={() => handleRemoveStatus(status)}
                 color="blue"
-                style={{ marginBottom: '8px', padding: '4px 8px', fontSize: '14px' }}
+                style={{
+                  marginBottom: '8px',
+                  padding: '4px 8px',
+                  fontSize: '14px',
+                }}
               >
                 {status}
               </Tag>
@@ -148,7 +159,7 @@ const SettingsModal = memo(({ open, onClose }) => {
             <Input
               placeholder="e.g., need revision, skipped"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={e => setInputValue(e.target.value)}
               onPressEnter={handleAddStatus}
               style={{ width: '350px' }}
             />
@@ -172,9 +183,9 @@ const SettingsModal = memo(({ open, onClose }) => {
         )}
       </Space>
     </Modal>
-  );
-});
+  )
+})
 
-SettingsModal.displayName = 'SettingsModal';
+SettingsModal.displayName = 'SettingsModal'
 
-export default SettingsModal;
+export default SettingsModal

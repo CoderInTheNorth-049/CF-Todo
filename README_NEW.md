@@ -5,32 +5,37 @@ A powerful **Spaced Repetition** style problem tracking application for Competit
 ## 🌟 Features
 
 ### 1. **Smart Problem Ingestion**
+
 - Paste Codeforces contest or problem URLs directly
 - Automatically fetches problem details (name, rating, tags)
 - For contests: filters out already solved problems using your submission history
 - Auto-detects URL type (contest vs single problem)
 
 ### 2. **Advanced Table Management**
+
 - **Edit Mode**: Toggle individual rows to edit problem name, URL, rating, and tags
-- **Custom Tag Input**: 
+- **Custom Tag Input**:
   - Press `Shift+Enter` to queue tags
   - Press `Enter` to save all queued tags
 - **Status Tracking**: Always-active dropdown to track problem status
 - **Notes**: Markdown-powered notes with lazy-loaded editor (code-split for performance)
 
 ### 3. **Flexible Status Management**
+
 - Customizable status options (default: "to upsolve", "pending review", "mastered")
 - Settings modal to add/remove status options
 - **Destructive Warning**: Changing statuses resets all problem statuses
 - **Bulk Update Tool**: After status reset, quickly reassign status to all problems
 
 ### 4. **Persistence Strategy**
+
 - Redux as single source of truth for app state
 - Manual sync to LocalStorage via "Sync to Local Storage" button
 - Prevents unnecessary writes on every keystroke
 - Auto-loads state on app startup
 
 ### 5. **Performance Optimizations**
+
 - React.memo on all major components to prevent unnecessary re-renders
 - useCallback for event handlers
 - Code-splitting: Markdown editor loaded only when notes modal opens
@@ -40,7 +45,7 @@ A powerful **Spaced Repetition** style problem tracking application for Competit
 
 - **Frontend Framework**: Vite + React
 - **UI Library**: Ant Design (antd) v5.x
-- **State Management**: 
+- **State Management**:
   - Redux Toolkit (client state)
   - TanStack React Query v5 (server/API state)
 - **Persistence**: Browser LocalStorage
@@ -76,22 +81,26 @@ src/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 16+ and npm
 
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone <repository-url>
 cd CF-Todo
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 ```
 
 3. Start development server
+
 ```bash
 npm run dev
 ```
@@ -111,6 +120,7 @@ npm run dev
 ### Adding Problems
 
 **Contest URL**: Paste a contest link, and the app will:
+
 - Fetch all problems in the contest
 - Check your submission history
 - Add only unsolved problems
@@ -123,7 +133,7 @@ npm run dev
 
 1. Click the **Edit** icon (pencil) on any row
 2. Edit name, URL, rating, and tags
-3. For tags: 
+3. For tags:
    - Type a tag, press `Shift+Enter` to queue it
    - Press `Enter` to save all queued tags
 4. Click **Save** (checkmark) or **Cancel** (X)
@@ -155,26 +165,31 @@ Click **"Sync to Local Storage"** button in the header to persist your data.
 ## 🎯 Key Design Decisions
 
 ### 1. **Manual LocalStorage Sync**
+
 - Prevents performance issues from constant writes
 - User controls when to persist data
 - Clear feedback via success messages
 
 ### 2. **Lazy-Loaded Markdown Editor**
+
 - Heavy component (~200KB)
 - Loaded only when notes modal opens
 - Improves initial page load time
 
 ### 3. **Memoization Strategy**
+
 - All major components wrapped in React.memo
 - useCallback for handlers passed as props
 - useSelector with specific selectors to prevent re-renders
 
 ### 4. **Destructive Action Warnings**
+
 - Modal confirmation before changing status options
 - Clear explanation of consequences
 - Recovery mechanism (bulk update tool)
 
 ### 5. **API State vs Client State Separation**
+
 - React Query for external API data (caching, retries)
 - Redux for application state (problems, settings)
 - Clean separation of concerns
@@ -182,15 +197,18 @@ Click **"Sync to Local Storage"** button in the header to persist your data.
 ## 🐛 Troubleshooting
 
 ### Problems not loading
+
 - Check console for API errors
 - Verify Codeforces username is correct
 - Ensure URL format is correct
 
 ### Status reset unexpectedly
+
 - This happens when you change status options in Settings
 - Use the Bulk Update Banner to quickly reassign statuses
 
 ### Data not persisting
+
 - Remember to click "Sync to Local Storage"
 - Check browser localStorage is enabled
 - Look for console errors
@@ -198,16 +216,19 @@ Click **"Sync to Local Storage"** button in the header to persist your data.
 ## 🔧 Development
 
 ### Build for Production
+
 ```bash
 npm run build
 ```
 
 ### Preview Production Build
+
 ```bash
 npm run preview
 ```
 
 ### Linting
+
 ```bash
 npm run lint
 ```

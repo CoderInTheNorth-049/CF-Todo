@@ -1,63 +1,77 @@
-import { useState, memo, useCallback } from 'react';
-import { Table, Tag, Input, InputNumber, Select, Button, Space, App } from 'antd';
+import { useState, memo, useCallback } from 'react'
+import {
+  Table,
+  Tag,
+  Input,
+  InputNumber,
+  Select,
+  Button,
+  Space,
+  App,
+} from 'antd'
 import {
   EditOutlined,
   DeleteOutlined,
   CheckOutlined,
   CloseOutlined,
   FileTextOutlined,
-} from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateProblem, deleteProblem } from '../store/problemsSlice';
+} from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateProblem, deleteProblem } from '../store/problemsSlice'
 
 // Memoized components for better performance
 const ProblemNameView = memo(({ name, url }) => (
-  <a href={url} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 500 }}>
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ fontWeight: 500 }}
+  >
     {name || 'Untitled Problem'}
   </a>
-));
-ProblemNameView.displayName = 'ProblemNameView';
+))
+ProblemNameView.displayName = 'ProblemNameView'
 
 const ProblemNameEdit = memo(({ name, url, onChange }) => (
   <Space orientation="vertical" style={{ width: '100%' }}>
     <Input
       placeholder="Display Name"
       value={name}
-      onChange={(e) => onChange('name', e.target.value)}
+      onChange={e => onChange('name', e.target.value)}
       size="small"
     />
     <Input
       placeholder="Problem URL"
       value={url}
-      onChange={(e) => onChange('url', e.target.value)}
+      onChange={e => onChange('url', e.target.value)}
       size="small"
     />
   </Space>
-));
-ProblemNameEdit.displayName = 'ProblemNameEdit';
+))
+ProblemNameEdit.displayName = 'ProblemNameEdit'
 
 const RatingView = memo(({ rating }) => (
   <span style={{ color: rating === 0 ? '#999' : '#000' }}>
     {rating === 0 ? 'Unrated' : rating}
   </span>
-));
-RatingView.displayName = 'RatingView';
+))
+RatingView.displayName = 'RatingView'
 
 const RatingEdit = memo(({ rating, onChange }) => (
   <InputNumber
     value={rating}
-    onChange={(value) => onChange('rating', value || 0)}
+    onChange={value => onChange('rating', value || 0)}
     min={0}
     max={5000}
     style={{ width: '100%' }}
     size="small"
   />
-));
-RatingEdit.displayName = 'RatingEdit';
+))
+RatingEdit.displayName = 'RatingEdit'
 
 const TagsView = memo(({ tags }) => {
   if (!tags || tags.length === 0) {
-    return <Tag color="default">no tags for now</Tag>;
+    return <Tag color="default">no tags for now</Tag>
   }
   return (
     <>
@@ -67,44 +81,43 @@ const TagsView = memo(({ tags }) => {
         </Tag>
       ))}
     </>
-  );
-});
-TagsView.displayName = 'TagsView';
+  )
+})
+TagsView.displayName = 'TagsView'
 
 const TagsEdit = memo(({ tags, onChange }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [pendingTags, setPendingTags] = useState([...tags]);
+  const [inputValue, setInputValue] = useState('')
+  const [pendingTags, setPendingTags] = useState([...tags])
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = e => {
     if (e.key === 'Enter') {
-      e.preventDefault();
-      if (inputValue.trim() && !pendingTags.includes(inputValue.trim()))
-     {
-        const allTags = [...pendingTags, inputValue.trim()];
-        setPendingTags(allTags);
-        setInputValue('');
-        onChange('tags', allTags);
+      e.preventDefault()
+      if (inputValue.trim() && !pendingTags.includes(inputValue.trim())) {
+        const allTags = [...pendingTags, inputValue.trim()]
+        setPendingTags(allTags)
+        setInputValue('')
+        onChange('tags', allTags)
       }
     }
-  };
+  }
 
-  const removeTag = (tagToRemove) => {
-    const updatedTags = pendingTags.filter(tag => tag !== tagToRemove);
-    setPendingTags(updatedTags);
-    onChange('tags', updatedTags);
-  };
+  const removeTag = tagToRemove => {
+    const updatedTags = pendingTags.filter(tag => tag !== tagToRemove)
+    setPendingTags(updatedTags)
+    onChange('tags', updatedTags)
+  }
 
   return (
-    <Space orientation='vertical' style={{ width: '100%' }}>
+    <Space orientation="vertical" style={{ width: '100%' }}>
       <Input
         placeholder="Type tag, Enter to save"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={e => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         size="small"
       />
       <div>
-        {pendingTags.map((tag) => (
+        {pendingTags.map(tag => (
           <Tag
             key={tag}
             closable
@@ -117,48 +130,50 @@ const TagsEdit = memo(({ tags, onChange }) => {
         ))}
       </div>
     </Space>
-  );
-});
-TagsEdit.displayName = 'TagsEdit';
+  )
+})
+TagsEdit.displayName = 'TagsEdit'
 
 const ProblemsTable = memo(({ onNotesClick }) => {
-  const [editingRowId, setEditingRowId] = useState(null);
-  const [editData, setEditData] = useState({});
-  const dispatch = useDispatch();
-  const { message } = App.useApp();
-  
-  const problems = useSelector(state => state.problems.problems);
-  const statusOptions = useSelector(state => state.settings.statusOptions);
+  const [editingRowId, setEditingRowId] = useState(null)
+  const [editData, setEditData] = useState({})
+  const dispatch = useDispatch()
+  const { message } = App.useApp()
 
-  const handleEdit = useCallback((record) => {
-    setEditingRowId(record.id);
-    setEditData({ ...record });
-  }, []);
+  const problems = useSelector(state => state.problems.problems)
+  const statusOptions = useSelector(state => state.settings.statusOptions)
 
-  const handleSave = useCallback((id) => {
-    dispatch(updateProblem({ id, updates: editData }));
-    setEditingRowId(null);
-    setEditData({});
-    message.success('Problem updated successfully!');
-  }, [editData, dispatch, message]);
+  const handleEdit = useCallback(record => {
+    setEditingRowId(record.id)
+    setEditData({ ...record })
+  }, [])
+
+  const handleSave = useCallback(
+    id => {
+      dispatch(updateProblem({ id, updates: editData }))
+      setEditingRowId(null)
+      setEditData({})
+      message.success('Problem updated successfully!')
+    },
+    [editData, dispatch, message]
+  )
 
   const handleCancel = useCallback(() => {
-    setEditingRowId(null);
-    setEditData({});
-  }, []);
+    setEditingRowId(null)
+    setEditData({})
+  }, [])
 
-  const handleDelete = useCallback((id) => {
-    dispatch(deleteProblem(id));
-    message.success('Problem deleted successfully!');
-  }, [dispatch, message]);
-
-  const handleStatusChange = useCallback((id, status) => {
-    dispatch(updateProblem({ id, updates: { status } }));
-  }, [dispatch]);
+  const handleDelete = useCallback(
+    id => {
+      dispatch(deleteProblem(id))
+      message.success('Problem deleted successfully!')
+    },
+    [dispatch, message]
+  )
 
   const handleEditDataChange = useCallback((field, value) => {
-    setEditData(prev => ({ ...prev, [field]: value }));
-  }, []);
+    setEditData(prev => ({ ...prev, [field]: value }))
+  }, [])
 
   const columns = [
     {
@@ -166,7 +181,7 @@ const ProblemsTable = memo(({ onNotesClick }) => {
       key: 'name',
       width: '30%',
       render: (_, record) => {
-        const isEditing = editingRowId === record.id;
+        const isEditing = editingRowId === record.id
         return isEditing ? (
           <ProblemNameEdit
             name={editData.name}
@@ -175,7 +190,7 @@ const ProblemsTable = memo(({ onNotesClick }) => {
           />
         ) : (
           <ProblemNameView name={record.name} url={record.url} />
-        );
+        )
       },
     },
     {
@@ -183,12 +198,15 @@ const ProblemsTable = memo(({ onNotesClick }) => {
       key: 'rating',
       width: '10%',
       render: (_, record) => {
-        const isEditing = editingRowId === record.id;
+        const isEditing = editingRowId === record.id
         return isEditing ? (
-          <RatingEdit rating={editData.rating} onChange={handleEditDataChange} />
+          <RatingEdit
+            rating={editData.rating}
+            onChange={handleEditDataChange}
+          />
         ) : (
           <RatingView rating={record.rating} />
-        );
+        )
       },
     },
     {
@@ -196,12 +214,12 @@ const ProblemsTable = memo(({ onNotesClick }) => {
       key: 'tags',
       width: '25%',
       render: (_, record) => {
-        const isEditing = editingRowId === record.id;
+        const isEditing = editingRowId === record.id
         return isEditing ? (
           <TagsEdit tags={editData.tags} onChange={handleEditDataChange} />
         ) : (
           <TagsView tags={record.tags} />
-        );
+        )
       },
     },
     {
@@ -209,28 +227,31 @@ const ProblemsTable = memo(({ onNotesClick }) => {
       key: 'status',
       width: '15%',
       render: (_, record) => {
-        const isEditing = editingRowId === record.id;
-        return <Select
-          value={isEditing ? editData.status : record.status}
-          onChange={(value) => handleEditDataChange('status', value)}
-          style={{ width: '100%' }}
-          placeholder="Select status"
-          size="small"
-          disabled={!isEditing}
-        >
-          {statusOptions.map(option => (
-            <Select.Option key={option} value={option}>
-              {option}
-            </Select.Option>
-          ))}
-        </Select>
-    }},
+        const isEditing = editingRowId === record.id
+        return (
+          <Select
+            value={isEditing ? editData.status : record.status}
+            onChange={value => handleEditDataChange('status', value)}
+            style={{ width: '100%' }}
+            placeholder="Select status"
+            size="small"
+            disabled={!isEditing}
+          >
+            {statusOptions.map(option => (
+              <Select.Option key={option} value={option}>
+                {option}
+              </Select.Option>
+            ))}
+          </Select>
+        )
+      },
+    },
     {
       title: 'Actions',
       key: 'actions',
       width: '20%',
       render: (_, record) => {
-        const isEditing = editingRowId === record.id;
+        const isEditing = editingRowId === record.id
         return (
           <Space size="small">
             <Button
@@ -239,7 +260,7 @@ const ProblemsTable = memo(({ onNotesClick }) => {
               onClick={() => onNotesClick(record)}
               title="Edit Notes"
             />
-            
+
             {isEditing ? (
               <>
                 <Button
@@ -275,10 +296,10 @@ const ProblemsTable = memo(({ onNotesClick }) => {
               </>
             )}
           </Space>
-        );
+        )
       },
     },
-  ];
+  ]
 
   return (
     <div style={{ padding: '20px' }}>
@@ -289,15 +310,15 @@ const ProblemsTable = memo(({ onNotesClick }) => {
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
-          showTotal: (total) => `Total ${total} problems`,
+          showTotal: total => `Total ${total} problems`,
         }}
         bordered
         size="small"
       />
     </div>
-  );
-});
+  )
+})
 
-ProblemsTable.displayName = 'ProblemsTable';
+ProblemsTable.displayName = 'ProblemsTable'
 
-export default ProblemsTable;
+export default ProblemsTable
