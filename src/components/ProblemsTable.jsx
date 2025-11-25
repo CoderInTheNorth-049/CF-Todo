@@ -76,37 +76,37 @@ const TagsEdit = memo(({ tags, onChange }) => {
   const [pendingTags, setPendingTags] = useState([...tags]);
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && e.shiftKey) {
-      // Shift+Enter: Add to pending tags
+    if (e.key === 'Enter') {
       e.preventDefault();
-      if (inputValue.trim() && !pendingTags.includes(inputValue.trim())) {
-        setPendingTags([...pendingTags, inputValue.trim()]);
+      if (inputValue.trim() && !pendingTags.includes(inputValue.trim()))
+     {
+        const allTags = [...pendingTags, inputValue.trim()];
+        setPendingTags(allTags);
         setInputValue('');
+        onChange('tags', allTags);
       }
-    } else if (e.key === 'Enter' && !e.shiftKey) {
-      // Enter: Save all pending tags
-      e.preventDefault();
-      onChange('tags', pendingTags);
     }
   };
 
   const removeTag = (tagToRemove) => {
-    setPendingTags(pendingTags.filter(tag => tag !== tagToRemove));
+    const updatedTags = pendingTags.filter(tag => tag !== tagToRemove);
+    setPendingTags(updatedTags);
+    onChange('tags', updatedTags);
   };
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
+    <Space orientation='vertical' style={{ width: '100%' }}>
       <Input
-        placeholder="Type tag, Shift+Enter to add, Enter to save"
+        placeholder="Type tag, Enter to save"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         size="small"
       />
       <div>
-        {pendingTags.map((tag, index) => (
+        {pendingTags.map((tag) => (
           <Tag
-            key={index}
+            key={tag}
             closable
             onClose={() => removeTag(tag)}
             color="blue"

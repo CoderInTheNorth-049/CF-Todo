@@ -1,8 +1,8 @@
 import { useState, useEffect, memo } from 'react';
 import { Modal, Input, Button, Space, Typography, Tag, App, Alert } from 'antd';
-import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStatusOptions, clearStatusChangeFlag } from '../store/settingsSlice';
+import { setStatusOptions } from '../store/settingsSlice';
 import { resetAllStatuses } from '../store/problemsSlice';
 
 const { Text, Paragraph } = Typography;
