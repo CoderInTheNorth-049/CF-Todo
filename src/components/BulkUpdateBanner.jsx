@@ -32,7 +32,7 @@ const BulkUpdateBanner = memo(() => {
       <Alert
         message="Statuses Reset"
         description={
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space orientation="vertical" style={{ width: '100%' }}>
             <div>
               All problem statuses have been reset due to status option changes. 
               Select a new status for all problems or update them individually.

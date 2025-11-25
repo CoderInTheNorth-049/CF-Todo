@@ -19,7 +19,7 @@ const ProblemNameView = memo(({ name, url }) => (
 ProblemNameView.displayName = 'ProblemNameView';
 
 const ProblemNameEdit = memo(({ name, url, onChange }) => (
-  <Space direction="vertical" style={{ width: '100%' }}>
+  <Space orientation="vertical" style={{ width: '100%' }}>
     <Input
       placeholder="Display Name"
       value={name}
@@ -208,13 +208,15 @@ const ProblemsTable = memo(({ onNotesClick }) => {
       title: 'Status',
       key: 'status',
       width: '15%',
-      render: (_, record) => (
-        <Select
-          value={record.status}
-          onChange={(value) => handleStatusChange(record.id, value)}
+      render: (_, record) => {
+        const isEditing = editingRowId === record.id;
+        return <Select
+          value={isEditing ? editData.status : record.status}
+          onChange={(value) => handleEditDataChange('status', value)}
           style={{ width: '100%' }}
           placeholder="Select status"
           size="small"
+          disabled={!isEditing}
         >
           {statusOptions.map(option => (
             <Select.Option key={option} value={option}>
@@ -222,8 +224,7 @@ const ProblemsTable = memo(({ onNotesClick }) => {
             </Select.Option>
           ))}
         </Select>
-      ),
-    },
+    }},
     {
       title: 'Actions',
       key: 'actions',
