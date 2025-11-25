@@ -1,5 +1,5 @@
-import { Modal } from 'antd';
-import { lazy, Suspense } from 'react';
+import { Modal, App } from 'antd';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateProblem } from '../store/problemsSlice';
 
@@ -8,32 +8,77 @@ const MDEditor = lazy(() => import('@uiw/react-md-editor'));
 
 const NotesModal = ({ open, onClose, problem }) => {
   const dispatch = useDispatch();
+  const { message } = App.useApp();
+  
+  const [localNotes, setLocalNotes] = useState('');
 
-  const handleSave = (newNotes) => {
+  // Reset local state when modal opens or problem changes
+  useEffect(() => {
+    if (open && problem) {
+      setLocalNotes(problem.notes || '');
+    }
+  }, [open, problem]);
+
+  const handleOk = () => {
     if (problem) {
       dispatch(updateProblem({
         id: problem.id,
-        updates: { notes: newNotes },
+        updates: { notes: localNotes },
       }));
+
+      message.success('Notes saved successfully!');
+      onClose();
     }
+  };
+
+  const handleCancel = () => {
+    // Local state will be reset by useEffect when modal reopens
+    onClose();
   };
 
   return (
     <Modal
       title={`Notes: ${problem?.name || 'Problem'}`}
       open={open}
-      onCancel={onClose}
-      width={800}
-      footer={null}
-      destroyOnClose
+      onOk={handleOk}
+      onCancel={handleCancel}
+      width={900}
+      okText="Save Notes"
+      cancelText="Cancel"
+      styles={{
+        body: {
+          maxHeight: '70vh',
+          overflowY: 'auto',
+        },
+      }}
     >
       <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Loading editor...</div>}>
         <div data-color-mode="light">
           <MDEditor
-            value={problem?.notes || ''}
-            onChange={handleSave}
-            height={400}
+            value={localNotes}
+            onChange={(value) => setLocalNotes(value || '')}
+            height={500}
             preview="edit"
+            toolbarCommands={[
+              'bold',
+              'italic',
+              'strikethrough',
+              'hr',
+              'title',
+              'divider',
+              'link',
+              'quote',
+              'code',
+              'codeBlock',
+              'divider',
+              'unorderedListCommand',
+              'orderedListCommand',
+              'checkedListCommand',
+              'divider',
+              'table',
+              'divider',
+              'help',
+            ]}
           />
         </div>
       </Suspense>

@@ -54,7 +54,7 @@ const Header = memo(({ onSettingsClick }) => {
   const handleManualAdd = () => {
     dispatch(addProblem({
       name: 'New Problem',
-      url: '',
+      url: 'https://codeforces.com/',
       rating: 0,
       tags: [],
     }));
